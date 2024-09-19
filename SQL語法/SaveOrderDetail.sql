@@ -17,6 +17,9 @@ BEGIN
 	Select @newestID,ProductId,Quantity,Price, Quantity  * Price
 	FROM Cart C left join Products P on C.ProductId = P.ProductId 
 	where C.CustomerId  = CId;
+
+	DELETE FROM Cart
+	where CustomerId = CId;
  
 	
 	
