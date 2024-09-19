@@ -1,6 +1,7 @@
 DELIMITER //
 
 #DROP PROCEDURE IF EXISTS usp_EditCart;
+#加入購物車;
 
 CREATE PROCEDURE usp_EditCart(IN CId int,IN PId int, IN Qua int,IN Status nvarchar(3) )
 BEGIN
