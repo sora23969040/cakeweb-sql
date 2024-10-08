@@ -1,0 +1,139 @@
+﻿@model List<Cart>  // 假设购物车项的模型是 Cart
+@Html.AntiForgeryToken()
+
+<div class="cart-container">
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>商品圖片</th>
+                <th>商品名稱</th>
+                <th>單品價格</th>
+                <th>數量</th>
+                <th>總價</th>
+                <th>刪除</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="cart-item-image">
+                        <img src="product-image-url.jpg" alt="@item.ProductName" />
+                    </td>
+                    <td class="cart-item-name">
+                        @item.ProductName
+                    </td>
+                    <td class="cart-item-price">
+                        <input type="hidden" id="price-@item.ProductId" value="@Math.Round(item.Price, 0)" />
+                        NT$@Math.Round(item.Price, 0)
+                    </td>
+                    <td class="cart-item-quantity">
+                        <div class="quantity-selector">
+                            <button type="button" id="decrease-@item.ProductId" class="quantity-btn" onclick="changeQuantity(@item.ProductId, -1)">-</button>
+                            <input type="number" value="@item.quantity" min="1" class="cart-quantity-input" id="quantity-@item.ProductId" readonly />
+                            <button type="button" class="quantity-btn" onclick="changeQuantity(@item.ProductId, 1)">+</button>
+                        </div>
+                    </td>
+                    <td class="cart-item-total" id="total-@item.ProductId">
+                        NT$@(Math.Round(item.Price * item.quantity, 0))
+                    </td>
+                    <td class="cart-item-delete">
+                        <form asp-action="Delete" method="post">
+                            <input type="hidden" name="ProductId" value="@item.ProductId" />
+                            <button type="submit" class="delete-btn">刪除</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="cart-total-container">
+        <span class="cart-total-label">總金額：</span>
+        <span class="cart-total-value" id="grand-total">
+            NT$@Math.Round(Model.Sum(item => item.Price * item.quantity), 0)
+        </span>
+    </div>
+    <div class="checkout-button-container">
+        <form asp-action="Checkout" method="post">
+            <button type="submit" class="checkout-button">前往結帳頁面</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function updateTotal(productId, price) {
+        const quantityInput = document.getElementById(`quantity-${productId}`);
+        const totalCell = document.getElementById(`total-${productId}`);
+        const grandTotalCell = document.getElementById('grand-total');
+
+        const quantity = parseInt(quantityInput.value);
+        const totalPrice = Math.round(price * quantity);  // 四舍五入到个位
+
+        totalCell.textContent = `NT$${totalPrice}`;
+
+        const cartItems = document.querySelectorAll('.cart-item-total');
+        let grandTotal = 0;
+
+        cartItems.forEach(item => {
+            const itemPrice = parseFloat(item.textContent.replace('NT$', '').trim());
+            grandTotal += itemPrice;
+        });
+
+        grandTotalCell.textContent = `NT$${Math.round(grandTotal)}`;  // 四舍五入到个位
+    }
+
+    function changeQuantity(productId, change) {
+        const quantityInput = document.getElementById(`quantity-${productId}`);
+        const decreaseButton = document.getElementById(`decrease-${productId}`);
+        let currentQuantity = parseInt(quantityInput.value);
+        const priceId = document.getElementById(`price-${productId}`);
+        let price = priceId.value;
+
+        // 计算新的数量
+        currentQuantity += change;
+
+        // 限制数量至少为1
+        if (currentQuantity < 1) {
+            currentQuantity = 1;
+        }
+
+        // 更新输入框的值
+        quantityInput.value = currentQuantity;
+
+
+        decreaseButton.disabled = (currentQuantity <= 1);
+          
+        // 更新总价
+        updateTotal(productId, price);
+
+        updateCartQuantity(productId, currentQuantity);
+    }
+
+    function updateCartQuantity(productId, quantity) {
+        // 使用 fetch() 向服务器发送异步请求更新购物车
+        fetch('../UpdateCart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]').value // CSRF token
+            },
+            body: JSON.stringify({ ProductId: productId, Quantity: quantity })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                } else {
+                    alert('更新失敗');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>

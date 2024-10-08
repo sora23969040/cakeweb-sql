@@ -1,0 +1,63 @@
+﻿@model Products
+
+<h2 class="ProductsInsert-header">產品資料上傳</h2>
+
+<div class="ProductsInsert-container">
+    <form asp-action="Insert" method="post" enctype="multipart/form-data" class="ProductsInsert-form">
+
+        <div class="ProductsInsert-form-group">
+            <label asp-for="Category" class="ProductsInsert-form-label">類別</label>
+            <input asp-for="Category" class="ProductsInsert-form-input" />
+            <span asp-validation-for="Category" class="text-danger"></span>
+        </div>
+
+
+        <div class="ProductsInsert-form-group">
+            <label asp-for="ProductName" class="ProductsInsert-form-label">產品名稱</label>
+            <input asp-for="ProductName" id="priceInput" class="ProductsInsert-form-input" />
+            <span asp-validation-for="ProductName" class="text-danger"></span>
+        </div>
+
+        <div class="ProductsInsert-form-group">
+            <label asp-for="Price" class="ProductsInsert-form-label">價格</label>
+            <input asp-for="Price" id="priceInput" type="number" step="1" class="ProductsInsert-form-input" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="ProductsInsert-form-group">
+            <label asp-for="StockQuantity" class="ProductsInsert-form-label">上架數量</label>
+            <input asp-for="StockQuantity" id="stockQuantityInput" type="number" class="ProductsInsert-form-input" min="1" />
+            <span asp-validation-for="StockQuantity" class="text-danger"></span>
+        </div>
+
+        <div class="ProductsInsert-form-group">
+            <label asp-for="Description" class="ProductsInsert-form-label">描述</label>
+            <textarea asp-for="Description" class="ProductsInsert-form-textarea"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="ProductsInsert-form-button">提交</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const stockQuantityInput = document.getElementById('stockQuantityInput');
+
+        // 離開輸入框時驗證
+        stockQuantityInput.addEventListener('blur', function () {
+            if (this.value < 1) {
+                alert('上架數量不能小於 1');
+                this.value = 1; // 將值更改為1
+            }
+        });
+
+        // 價格的blur事件驗證
+        priceInput.addEventListener('blur', function () {
+            if (this.value < 0) {
+                alert('價格不能小於 0');
+                this.value = 1; // 將值更改為0
+            }
+        });
+    });
+</script>

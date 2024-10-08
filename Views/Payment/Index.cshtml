@@ -1,0 +1,41 @@
+﻿@model Shipping
+
+
+<h2>結帳資訊</h2>
+
+<div class="checkout-container">
+    <form asp-action="ConfirmOrder" method="post">
+        <div class="checkout-field">
+            <label for="orderId">訂單編號：</label>
+            <input type="text" id="orderId" name="OrderId" value="@Model.OrderId" readonly />
+        </div>
+
+        <div class="checkout-field">
+            <label for="shippingMethod">運送方式：</label>
+            <select id="shippingMethod" name="ShippingMethod">
+                <option value="Standard">標準運送</option>
+                <option value="Express" >快速運送</option>
+                <option value="Courier" >快遞</option>
+            </select>
+        </div>
+
+        <div class="checkout-field">
+            <label for="trackingNumber">追蹤號碼：</label>
+            <input type="text" id="trackingNumber" name="TrackingNumber" value="@Model.TrackingNumber" readonly />
+        </div>
+
+        <div class="checkout-field">
+            <label for="shippingCost">運費：</label>
+            <input type="text" id="shippingCost" name="ShippingCost" value="@Model.ShippingCost.ToString("F0")" readonly />
+        </div>
+
+        <div class="checkout-field">
+            <label for="shippingStatus">運送狀態：</label>
+            <input type="text" id="shippingStatus" name="ShippingStatus" value="@Model.ShippingStatus" readonly />
+        </div>
+
+        <div class="checkout-actions">
+            <button type="submit" class="confirm-order-btn">確認訂單</button>
+        </div>
+    </form>
+</div>

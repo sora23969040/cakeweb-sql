@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "產品";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model IEnumerable<Products>
+
+<h1>我們的產品</h1>
+
+<div class="product-grid">
+    @foreach (var product in Model)
+    {
+        <div class="product-card">
+            <a href="@Url.Action("Detail", "Products", new { id = product.ProductId })">
+                <div class="product-image">
+                    <!--<img src="product.ImageUrl" alt="product.ProductName" />-->
+                </div>
+                <h2 class="product-name">@product.ProductName</h2>
+                <p class="product-price">NT$@product.Price</p>
+                <p>@product.Description</p>
+            </a>
+        </div>
+    }
+</div>
